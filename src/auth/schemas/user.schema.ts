@@ -1,6 +1,21 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 
+class NotificationType {
+  type: string;
+  default: string[];
+  period: 'weekly' | 'monthly';
+}
+
+class PrivacyType {
+  showActive: boolean;
+  showProfilePicture: boolean;
+  showBannerPicture: boolean;
+  showProfile: boolean;
+  showLocation: boolean;
+  showStatics: boolean;
+}
+
 @Schema()
 export class User {
   _id: Types.ObjectId;
@@ -41,24 +56,21 @@ export class User {
   @Prop({ type: [String], default: [] })
   roles: string[];
 
-  @Prop({ required: false })
-  notifications: [
-    {
-      type: string;
-      default: string[];
-      period: 'weekly' | 'monthly';
-    },
-  ];
+  @Prop({ type: [{ type: Object }], required: false })
+  notifications: NotificationType[];
 
-  @Prop({ required: true })
-  privacy: {
-    showActive: boolean;
-    showProfilePicture: boolean;
-    showBannerPicture: boolean;
-    showProfile: boolean;
-    showLocation: boolean;
-    showStatics: boolean;
-  };
+  @Prop({
+    type: {
+      showActive: { type: Boolean, required: true },
+      showProfilePicture: { type: Boolean, required: true },
+      showBannerPicture: { type: Boolean, required: true },
+      showProfile: { type: Boolean, required: true },
+      showLocation: { type: Boolean, required: true },
+      showStatics: { type: Boolean, required: true },
+    },
+    required: true,
+  })
+  privacy: PrivacyType;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

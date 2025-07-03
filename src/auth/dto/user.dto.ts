@@ -1,4 +1,49 @@
-import { IsEmail, IsNotEmpty, MaxLength, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  MaxLength,
+  MinLength,
+  IsOptional,
+  IsBoolean,
+  IsString,
+  IsArray,
+  IsEnum,
+  ValidateNested,
+  IsObject,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+
+class NotificationDto {
+  @IsString()
+  type: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  default: string[];
+
+  @IsEnum(['weekly', 'monthly'])
+  period: 'weekly' | 'monthly';
+}
+
+class PrivacyDto {
+  @IsBoolean()
+  showActive: boolean;
+
+  @IsBoolean()
+  showProfilePicture: boolean;
+
+  @IsBoolean()
+  showBannerPicture: boolean;
+
+  @IsBoolean()
+  showProfile: boolean;
+
+  @IsBoolean()
+  showLocation: boolean;
+
+  @IsBoolean()
+  showStatics: boolean;
+}
 
 export class UserDto {
   @IsNotEmpty({ message: 'Mail Alanı Boş Olamaz' })
@@ -10,6 +55,48 @@ export class UserDto {
   @MaxLength(48, { message: 'Şifre En Fazla 48 Karakter Olmalıdır' })
   password: string;
 
-  @IsNotEmpty({ message: 'İsim Alanı Boş Olamaz' })
-  name: string;
+  @IsOptional()
+  @IsString()
+  username?: string;
+
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @IsOptional()
+  @IsString()
+  profilePicture?: string;
+
+  @IsOptional()
+  @IsString()
+  bannerPicture?: string;
+
+  @IsOptional()
+  @IsString()
+  location?: string;
+
+  @IsOptional()
+  @IsString()
+  bio?: string;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  isVerified: boolean;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  roles?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => NotificationDto)
+  notifications?: NotificationDto[];
+
+  @IsNotEmpty()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => PrivacyDto)
+  privacy: PrivacyDto;
 }
