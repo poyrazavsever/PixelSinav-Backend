@@ -5,6 +5,9 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Connection, ConnectionStates } from 'mongoose';
 
+//
+import { AuthModule } from './auth/auth.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -30,6 +33,7 @@ import { Connection, ConnectionStates } from 'mongoose';
       }),
       inject: [ConfigService],
     }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
