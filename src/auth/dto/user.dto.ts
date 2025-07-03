@@ -80,7 +80,7 @@ export class UserDto {
   bio?: string;
 
   @IsBoolean()
-  @IsNotEmpty()
+  @IsOptional()
   isVerified: boolean;
 
   @IsArray()
@@ -94,7 +94,7 @@ export class UserDto {
   @Type(() => NotificationDto)
   notifications?: NotificationDto[];
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsObject()
   @ValidateNested()
   @Type(() => PrivacyDto)
