@@ -95,7 +95,7 @@ export class EmailService {
   ): Promise<{ token: string }> {
     try {
       const token = this.generateVerificationToken();
-      const resetLink = `http://localhost:3001/reset-password/${token}`;
+      const resetLink = `http://localhost:3001/auth/reset-password/${token}`;
 
       await this.mailerService.sendMail({
         to: email,
