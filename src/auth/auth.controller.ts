@@ -51,4 +51,9 @@ export class AuthController {
   async verifyEmail(@Param('token') token: string) {
     return this.authService.verifyEmail(token);
   }
+
+  @Post('findOneByID')
+  async findOneByID(@Body('id') token: string) {
+    return this.authService.findOneById(token);
+  }
 }

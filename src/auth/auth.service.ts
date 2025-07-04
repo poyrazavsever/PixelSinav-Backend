@@ -301,4 +301,51 @@ export class AuthService {
       );
     }
   }
+
+  async findOneById(id: string) {
+    try {
+      const user = await this.userModel.findById(id);
+      
+      if (!user) {
+        throw new NotFoundException('Kullanıcı bulunamadı');
+      }
+
+      return {
+        success: true,
+        message: 'Kullanıcı başarıyla bulundu',
+        user: {
+          _id: user._id,
+          email: user.email,
+          username: user.username,
+          name: user.name,
+          profilePicture: user.profilePicture,
+          bannerPicture: user.bannerPicture,
+          location: user.location,
+          bio: user.bio,
+          isVerified: user.isVerified,
+          roles: user.roles,
+          notifications: user.notifications,
+          privacy: user.privacy,
+          updatedAt: user.updatedAt,
+          createdAt: user.createdAt
+        }
+      };
+    } catch (error) {
+      console.error('Kullanıcı bulma hatası:', error);
+
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+
+      if (typeof error === 'object' && error !== null && 'name' in error) {
+        if ((error as { name: string }).name === 'CastError') {
+          throw new NotFoundException('Geçersiz kullanıcı ID formatı');
+        }
+      }
+
+      throw new UnauthorizedException(
+        'Kullanıcı bulma işlemi sırasında bir hata oluştu',
+      );
+    }
+  }
 }
