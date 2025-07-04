@@ -3,9 +3,49 @@ import {
   IsString,
   IsObject,
   ValidateNested,
+  IsArray,
+  IsEnum,
+  IsBoolean,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { PrivacyDto } from './user.dto';
+
+class UpdateNotificationDto {
+  @IsString()
+  type: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  default: string[];
+
+  @IsEnum(['weekly', 'monthly'])
+  period: 'weekly' | 'monthly';
+}
+
+export class UpdatePrivacySettingsDto {
+  @IsOptional()
+  @IsBoolean()
+  showActive?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  showProfilePicture?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  showBannerPicture?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  showProfile?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  showLocation?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  showStatics?: boolean;
+}
 
 export class UpdateUserDto {
   @IsOptional()
@@ -33,8 +73,14 @@ export class UpdateUserDto {
   bio?: string;
 
   @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => UpdateNotificationDto)
+  notifications?: UpdateNotificationDto[];
+
+  @IsOptional()
   @IsObject()
   @ValidateNested()
-  @Type(() => PrivacyDto)
-  privacy?: PrivacyDto;
+  @Type(() => UpdatePrivacySettingsDto)
+  privacy?: UpdatePrivacySettingsDto;
 }

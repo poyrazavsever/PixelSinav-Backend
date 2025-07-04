@@ -1,9 +1,18 @@
-import { Body, Controller, Post, Put, Param, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Put,
+  Param,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserDto } from './dto/user.dto';
 import { LoginDto } from './dto/login.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { RequestWithUser } from './interfaces/request-with-user.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -11,7 +20,9 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+    const result = await this.authService.login(loginDto);
+    console.log('Login response:', result); // Debug log
+    return result;
   }
 
   @Post('register')
@@ -21,8 +32,14 @@ export class AuthController {
 
   @Put('update')
   @UseGuards(JwtAuthGuard)
-  async update(@Body() updateUserDto: UpdateUserDto) {
-    return this.authService.update(updateUserDto);
+  async update(
+    @Request() req: RequestWithUser,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    console.log('Update request headers:', req.headers); // Debug log
+    console.log('Update request user:', req.user); // Debug log
+    console.log('Update request body:', updateUserDto); // Debug log
+    return this.authService.update(updateUserDto, req.user.userId);
   }
 
   @Post('verify-email')

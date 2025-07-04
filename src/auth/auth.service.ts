@@ -43,23 +43,24 @@ export class AuthService {
       };
 
       // JWT token oluştur
-      const token = this.jwtService.sign(payload);
+      const accessToken = this.jwtService.sign(payload);
+
+      // Kullanıcı bilgilerini hazırla (password hariç)
+      const userResponse = {
+        _id: user._id,
+        email: user.email,
+        name: user.name,
+        roles: user.roles,
+        isVerified: user.isVerified,
+      };
 
       return {
         success: true,
         message: 'Giriş başarılı',
-        token,
-        user: {
-          email: user.email,
-          name: user.name,
-          isVerified: user.isVerified,
-          roles: user.roles,
-          profilePicture: user.profilePicture,
-          privacy: user.privacy,
-        },
+        accessToken,
+        user: userResponse,
       };
     } catch (error) {
-      // Hata yönetimi
       if (error instanceof UnauthorizedException) {
         throw error;
       }
@@ -133,16 +134,98 @@ export class AuthService {
     }
   }
 
-  async update(updateUserDto: UpdateUserDto) {
-    // Simüle edilmiş async işlem
-    await new Promise((resolve) => setTimeout(resolve, 100));
+  // Kullanıcı bilgi güncelleme işlemi
+  async update(updateUserDto: UpdateUserDto, userId: string) {
+    try {
+      // Kullanıcıyı bul
+      const user = await this.userModel.findById(userId);
+      if (!user) {
+        throw new UnauthorizedException('Kullanıcı bulunamadı');
+      }
 
-    console.log('Güncelleme isteği alındı:', updateUserDto);
-    return {
-      success: true,
-      message: 'Kullanıcı bilgileri güncellendi (test)',
-      user: updateUserDto,
-    };
+      // Kullanıcı bilgilerini güncelle
+      if (updateUserDto.username) user.username = updateUserDto.username;
+      if (updateUserDto.name) user.name = updateUserDto.name;
+      if (updateUserDto.profilePicture)
+        user.profilePicture = updateUserDto.profilePicture;
+      if (updateUserDto.bannerPicture)
+        user.bannerPicture = updateUserDto.bannerPicture;
+      if (updateUserDto.location) user.location = updateUserDto.location;
+      if (updateUserDto.bio) user.bio = updateUserDto.bio;
+
+      // Privacy ayarlarını güncelle
+      if (updateUserDto.privacy) {
+        user.privacy = {
+          ...user.privacy,
+          ...updateUserDto.privacy,
+        };
+      }
+
+      // Bildirimleri güncelle
+      if (updateUserDto.notifications) {
+        updateUserDto.notifications.forEach((newNotification) => {
+          const existingNotificationIndex = user.notifications.findIndex(
+            (n) => n.type === newNotification.type,
+          );
+
+          if (existingNotificationIndex > -1) {
+            // Mevcut bildirimi güncelle
+            user.notifications[existingNotificationIndex] = {
+              ...user.notifications[existingNotificationIndex],
+              ...newNotification,
+            };
+          } else {
+            // Yeni bildirim ekle
+            user.notifications.push(newNotification);
+          }
+        });
+      }
+
+      // Son güncelleme zamanını ayarla
+      user.updatedAt = new Date();
+
+      // Değişiklikleri kaydet
+      await user.save();
+
+      return {
+        success: true,
+        message: 'Kullanıcı bilgileri başarıyla güncellendi',
+        user: {
+          email: user.email,
+          username: user.username,
+          name: user.name,
+          profilePicture: user.profilePicture,
+          bannerPicture: user.bannerPicture,
+          location: user.location,
+          bio: user.bio,
+          isVerified: user.isVerified,
+          roles: user.roles,
+          notifications: user.notifications,
+          privacy: user.privacy,
+          updatedAt: user.updatedAt,
+        },
+      };
+    } catch (error: unknown) {
+      console.error('Güncelleme hatası:', error);
+
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+
+      if (typeof error === 'object' && error !== null && 'name' in error) {
+        if ((error as { name: string }).name === 'ValidationError') {
+          throw new UnauthorizedException('Geçersiz veri formatı');
+        }
+
+        if ((error as { name: string }).name === 'CastError') {
+          throw new UnauthorizedException('Geçersiz kullanıcı ID');
+        }
+      }
+
+      throw new UnauthorizedException(
+        'Güncelleme işlemi sırasında bir hata oluştu',
+      );
+    }
   }
 
   async sendVerificationEmail(email: string) {
