@@ -95,9 +95,8 @@ Projeyi geliştirirken faydalandığım kaynaklar:
 
 Soru, öneri veya iş birliği için benimle iletişime geçebilirsiniz:
 
-- LinkedIn: [LinkedIn Profiliniz]
-- Twitter: [@TwitterHandle]
-- Email: mail@example.com
+- LinkedIn: [https://www.linkedin.com/in/poyrazavsever]
+- Email: poyrazavsever@gmail.com
 
 ## Lisans
 
@@ -105,7 +104,5 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICE
 
 ---
 
-<div align="center">
-  <p>⭐ Bu projeyi beğendiyseniz yıldız vermeyi unutmayın! ⭐</p>
-  <p>🌱 Burası sürekli öğrenme ve gelişme yolculuğunda bir durak... Mentörlük yapmak, destek olmak, tavsiye vermek isterseniz [buradan](https://www.pavsever.com) bana ulaşın.</p>
-</div>
+  ⭐ Bu projeyi beğendiyseniz yıldız vermeyi unutmayın!
+  🌱 Burası sürekli öğrenme ve gelişme yolculuğunda bir durak... Mentörlük yapmak, destek olmak, tavsiye vermek isterseniz [buradan](https://www.pavsever.com) bana ulaşın.
