@@ -62,6 +62,12 @@ export class User {
   @Prop({ required: false, type: Date })
   verificationTokenExpires: Date;
 
+  @Prop({ required: false })
+  resetPasswordToken: string;
+
+  @Prop({ required: false, type: Date })
+  resetPasswordExpires: Date;
+
   @Prop({
     type: {
       showActive: { type: Boolean, default: true },

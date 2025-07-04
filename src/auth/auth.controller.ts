@@ -56,4 +56,14 @@ export class AuthController {
   async findOneByID(@Body('id') token: string) {
     return this.authService.findOneById(token);
   }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body('email') email: string) {
+    return this.authService.forgotPassword(email);
+  }
+
+  @Post('reset-password/:token')
+  async resetPassword(@Body('password') password: string, @Param('token') token: string) {
+    return this.authService.resetPassword(password, token);
+  }
 }

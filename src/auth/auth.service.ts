@@ -14,6 +14,7 @@ import { LoginDto } from './dto/login.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { EmailService } from '../email/email.service';
+import { log } from 'console';
 
 @Injectable()
 export class AuthService {
@@ -345,6 +346,95 @@ export class AuthService {
 
       throw new UnauthorizedException(
         'Kullanıcı bulma işlemi sırasında bir hata oluştu',
+      );
+    }
+  }
+
+  async forgotPassword(email: string) {
+    try {
+      const user = await this.userModel.findOne({ email });
+      if (!user) {
+        throw new NotFoundException('Bu e-posta adresiyle kayıtlı kullanıcı bulunamadı');
+      }
+
+      const { token } = await this.emailService.sendPasswordResetEmail(
+        email,
+        user.name || 'Değerli Kullanıcı',
+      );
+
+      // Şifre sıfırlama token'ını kullanıcı belgesine kaydet
+      const expirationDate = new Date(Date.now() + 60 * 60 * 1000); // 1 saat
+      
+      console.log('Saving reset token:', {
+        token,
+        expirationDate,
+        userId: user._id
+      });
+
+      user.resetPasswordToken = token;
+      user.resetPasswordExpires = expirationDate;
+      await user.save();
+      
+      // Doğrulama için tekrar kullanıcıyı oku
+      const savedUser = await this.userModel.findById(user._id);
+      console.log('Saved user reset info:', savedUser ? {
+        token: savedUser.resetPasswordToken,
+        expires: savedUser.resetPasswordExpires
+      } : 'User not found after save');
+
+      return {
+        success: true,
+        message: 'Şifre sıfırlama bağlantısı e-posta adresinize gönderildi',
+      };
+    } catch (error) {
+      console.error('Şifre sıfırlama hatası:', error);
+
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+
+      throw new UnauthorizedException(
+        'Şifre sıfırlama işlemi sırasında bir hata oluştu',
+      );
+    }
+  }
+
+  async resetPassword(newPassword: string, token: string) {
+    try {
+
+      const user = await this.userModel.findOne({
+        resetPasswordToken: token,
+        resetPasswordExpires: { $gt: new Date() },
+      });
+
+      if (!user) {
+        throw new UnauthorizedException(
+          'Geçersiz veya süresi dolmuş şifre sıfırlama bağlantısı',
+        );
+      }
+
+      // Yeni şifreyi hashle
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      
+      // Şifreyi güncelle ve token'ları temizle
+      user.password = hashedPassword;
+      user.resetPasswordToken = '';
+      user.resetPasswordExpires = new Date(0);
+      await user.save();
+
+      return {
+        success: true,
+        message: 'Şifreniz başarıyla güncellendi',
+      };
+    } catch (error) {
+      console.error('Şifre sıfırlama hatası:', error);
+
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+
+      throw new UnauthorizedException(
+        'Şifre sıfırlama işlemi sırasında bir hata oluştu',
       );
     }
   }
