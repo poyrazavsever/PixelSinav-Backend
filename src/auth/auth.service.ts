@@ -124,7 +124,7 @@ export class AuthService {
           'Kayıt başarılı!',
         token,
         user: {
-          id: newUser._id.toString(),
+          _id: newUser._id.toString(),
           email: newUser.email,
           name: newUser.name,
           isVerified: newUser.isVerified,
