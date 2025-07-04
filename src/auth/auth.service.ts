@@ -124,6 +124,7 @@ export class AuthService {
           'Kayıt başarılı! E-posta doğrulaması için gelen kutunuzu kontrol edin.',
         token,
         user: {
+          id: newUser._id.toString(),
           email: newUser.email,
           name: newUser.name,
           isVerified: newUser.isVerified,
