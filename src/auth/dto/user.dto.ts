@@ -25,7 +25,7 @@ class NotificationDto {
   period: 'weekly' | 'monthly';
 }
 
-class PrivacyDto {
+export class PrivacyDto {
   @IsBoolean()
   showActive: boolean;
 
