@@ -1,25 +1,69 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { JwtService } from '@nestjs/jwt';
+import bcrypt from 'bcrypt';
+
+import { User } from './schemas/user.schema';
 import { UserDto } from './dto/user.dto';
 import { LoginDto } from './dto/login.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
-  async login(loginDto: LoginDto) {
-    // Simüle edilmiş async işlem
-    await new Promise((resolve) => setTimeout(resolve, 100));
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private jwtService: JwtService,
+  ) {}
 
-    console.log('Giriş isteği alındı:', loginDto);
-    return {
-      success: true,
-      message: 'Giriş başarılı (test)',
-      token: 'test_jwt_token_123',
-      user: {
-        email: loginDto.email,
-        isVerified: true,
-        roles: ['user'],
-      },
-    };
+  async login(loginDto: LoginDto) {
+    try {
+      // E-posta ile kullanıcıyı bul
+      const user = await this.userModel.findOne({ email: loginDto.email });
+      if (!user) {
+        throw new UnauthorizedException('E-posta adresi veya şifre hatalı');
+      }
+
+      // Şifre doğrulaması
+      const isPasswordValid = await bcrypt.compare(
+        loginDto.password,
+        user.password,
+      );
+      if (!isPasswordValid) {
+        throw new UnauthorizedException('E-posta adresi veya şifre hatalı');
+      }
+
+      // JWT payload hazırla
+      const payload: JwtPayload = {
+        sub: user._id.toString(),
+        email: user.email,
+        roles: user.roles,
+      };
+
+      // JWT token oluştur
+      const token = this.jwtService.sign(payload);
+
+      return {
+        success: true,
+        message: 'Giriş başarılı',
+        token,
+        user: {
+          email: user.email,
+          name: user.name,
+          isVerified: user.isVerified,
+          roles: user.roles,
+          profilePicture: user.profilePicture,
+          privacy: user.privacy,
+        },
+      };
+    } catch (error) {
+      // Hata yönetimi
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new UnauthorizedException('Giriş işlemi sırasında bir hata oluştu');
+    }
   }
 
   async register(userDto: UserDto) {
