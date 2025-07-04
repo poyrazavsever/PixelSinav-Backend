@@ -399,8 +399,20 @@ export class AuthService {
     }
   }
 
-  async resetPassword(newPassword: string, token: string) {
+  async resetPassword(oldPassword: string, newPassword: string, token: string) {
     try {
+      console.log('Searching for token:', token);
+      console.log('Current time:', new Date());
+      
+      // Debug için tüm reset token'ı olan kullanıcıları kontrol et
+      const allUsersWithToken = await this.userModel.find({
+        resetPasswordToken: { $exists: true }
+      });
+      console.log('Users with reset tokens:', allUsersWithToken.map(u => ({
+        email: u.email,
+        token: u.resetPasswordToken,
+        expires: u.resetPasswordExpires
+      })));
 
       const user = await this.userModel.findOne({
         resetPasswordToken: token,
@@ -411,6 +423,12 @@ export class AuthService {
         throw new UnauthorizedException(
           'Geçersiz veya süresi dolmuş şifre sıfırlama bağlantısı',
         );
+      }
+
+      // Eski şifreyi kontrol et
+      const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
+      if (!isOldPasswordValid) {
+        throw new UnauthorizedException('Eski şifreniz yanlış');
       }
 
       // Yeni şifreyi hashle
