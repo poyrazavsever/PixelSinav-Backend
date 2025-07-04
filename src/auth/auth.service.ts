@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 
 import { User } from './schemas/user.schema';
 import { UserDto } from './dto/user.dto';
@@ -17,6 +17,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
+  // login işlemi
   async login(loginDto: LoginDto) {
     try {
       // E-posta ile kullanıcıyı bul
@@ -66,20 +67,70 @@ export class AuthService {
     }
   }
 
+  // Kullanıcı kaydı işlemi
   async register(userDto: UserDto) {
-    // Simüle edilmiş async işlem
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    try {
+      // Email kontrolü
+      const existingUser = await this.userModel.findOne({
+        email: userDto.email,
+      });
+      if (existingUser) {
+        throw new UnauthorizedException('Bu e-posta adresi zaten kullanımda');
+      }
 
-    console.log('Kayıt isteği alındı:', userDto);
-    return {
-      success: true,
-      message: 'Kullanıcı kaydı başarılı (test)',
-      user: {
+      // Şifreyi hashle
+      const hashedPassword = await bcrypt.hash(userDto.password, 10);
+
+      // Yeni kullanıcı oluştur
+      const newUser = new this.userModel({
         ...userDto,
+        password: hashedPassword,
         isVerified: false,
         roles: ['user'],
-      },
-    };
+        privacy: {
+          showActive: true,
+          showProfilePicture: true,
+          showBannerPicture: true,
+          showProfile: true,
+          showLocation: true,
+          showStatics: true,
+        },
+      });
+
+      // Kullanıcıyı kaydet
+      await newUser.save();
+
+      // JWT payload hazırla
+      const payload: JwtPayload = {
+        sub: newUser._id.toString(),
+        email: newUser.email,
+        roles: newUser.roles,
+      };
+
+      // JWT token oluştur
+      const token = this.jwtService.sign(payload);
+
+      // Başarılı yanıt dön
+      return {
+        success: true,
+        message:
+          'Kayıt başarılı! E-posta doğrulaması için gelen kutunuzu kontrol edin.',
+        token,
+        user: {
+          email: newUser.email,
+          name: newUser.name,
+          isVerified: newUser.isVerified,
+          roles: newUser.roles,
+          profilePicture: newUser.profilePicture,
+          privacy: newUser.privacy,
+        },
+      };
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new UnauthorizedException('Kayıt işlemi sırasında bir hata oluştu');
+    }
   }
 
   async update(updateUserDto: UpdateUserDto) {
