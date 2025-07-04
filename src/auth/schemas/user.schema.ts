@@ -56,21 +56,50 @@ export class User {
   @Prop({ type: [String], default: [] })
   roles: string[];
 
-  @Prop({ type: [{ type: Object }], required: false })
-  notifications: NotificationType[];
+  @Prop({ required: false })
+  verificationToken: string;
+
+  @Prop({ required: false, type: Date })
+  verificationTokenExpires: Date;
 
   @Prop({
     type: {
-      showActive: { type: Boolean, required: true },
-      showProfilePicture: { type: Boolean, required: true },
-      showBannerPicture: { type: Boolean, required: true },
-      showProfile: { type: Boolean, required: true },
-      showLocation: { type: Boolean, required: true },
-      showStatics: { type: Boolean, required: true },
+      showActive: { type: Boolean, default: true },
+      showProfilePicture: { type: Boolean, default: true },
+      showBannerPicture: { type: Boolean, default: true },
+      showProfile: { type: Boolean, default: true },
+      showLocation: { type: Boolean, default: true },
+      showStatics: { type: Boolean, default: true },
     },
-    required: true,
+    default: {
+      showActive: true,
+      showProfilePicture: true,
+      showBannerPicture: true,
+      showProfile: true,
+      showLocation: true,
+      showStatics: true,
+    },
   })
   privacy: PrivacyType;
+
+  @Prop([
+    {
+      type: {
+        type: String,
+        required: true,
+      },
+      default: {
+        type: [String],
+        required: true,
+      },
+      period: {
+        type: String,
+        enum: ['daily', 'weekly', 'monthly'],
+        required: true,
+      },
+    },
+  ])
+  notifications: NotificationType[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

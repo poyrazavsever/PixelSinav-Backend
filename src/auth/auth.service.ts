@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
@@ -9,12 +13,14 @@ import { UserDto } from './dto/user.dto';
 import { LoginDto } from './dto/login.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     private jwtService: JwtService,
+    private emailService: EmailService,
   ) {}
 
   // login işlemi
@@ -228,28 +234,70 @@ export class AuthService {
     }
   }
 
+  // E-posta doğrulama işlemleri
   async sendVerificationEmail(email: string) {
-    // Simüle edilmiş async işlem
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    try {
+      const user = await this.userModel.findOne({ email });
+      if (!user) {
+        throw new NotFoundException('Kullanıcı bulunamadı');
+      }
 
-    console.log('Doğrulama e-postası gönderiliyor:', email);
+      if (user.isVerified) {
+        return {
+          success: false,
+          message: 'Bu e-posta adresi zaten doğrulanmış',
+        };
+      }
 
-    const verificationToken = 'test_verification_token_123';
-    return {
-      success: true,
-      message: 'Doğrulama e-postası gönderildi (test)',
-      verificationLink: `http://localhost:3000/auth/verify/${verificationToken}`,
-    };
+      const { token } = await this.emailService.sendVerificationEmail(
+        email,
+        user.name || 'Değerli Kullanıcı',
+      );
+
+      // Doğrulama token'ını kullanıcı belgesine kaydet
+      user.verificationToken = token;
+      user.verificationTokenExpires = new Date(
+        Date.now() + 24 * 60 * 60 * 1000,
+      ); // 24 saat
+      await user.save();
+
+      return {
+        success: true,
+        message: 'Doğrulama e-postası gönderildi',
+      };
+    } catch (error) {
+      console.error('E-posta gönderme hatası:', error);
+      throw new UnauthorizedException('Doğrulama e-postası gönderilemedi');
+    }
   }
 
   async verifyEmail(token: string) {
-    // Simüle edilmiş async işlem
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    try {
+      const user = await this.userModel.findOne({
+        verificationToken: token,
+        verificationTokenExpires: { $gt: Date.now() },
+      });
 
-    console.log('E-posta doğrulama isteği alındı. Token:', token);
-    return {
-      success: true,
-      message: 'E-posta adresi başarıyla doğrulandı (test)',
-    };
+      if (!user) {
+        throw new UnauthorizedException(
+          'Geçersiz veya süresi dolmuş doğrulama bağlantısı',
+        );
+      }
+
+      user.isVerified = true;
+      user.verificationToken = '';
+      user.verificationTokenExpires = new Date(0);
+      await user.save();
+
+      return {
+        success: true,
+        message: 'E-posta adresi başarıyla doğrulandı',
+      };
+    } catch (error) {
+      console.error('E-posta doğrulama hatası:', error);
+      throw new UnauthorizedException(
+        'E-posta doğrulama işlemi başarısız oldu',
+      );
+    }
   }
 }
