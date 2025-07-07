@@ -1,15 +1,14 @@
 import { Controller, Param, Post, Get, Put, Body } from '@nestjs/common';
-
-// Services
 import { ApplicationService } from './application.service';
+import { ApplicationDto } from './dto/application.dto';
 
 @Controller('application')
 export class ApplicationController {
   constructor(private applicationService: ApplicationService) {}
 
   @Post('apply')
-  apply() {
-    return this.applicationService.apply();
+  async apply(@Body() applicationDto: ApplicationDto): Promise<any> {
+    return this.applicationService.apply(applicationDto);
   }
 
   @Get('getAll')
@@ -17,14 +16,14 @@ export class ApplicationController {
     return this.applicationService.getAll();
   }
 
-  @Get('getByUserId')
-  getByUserId() {
-    return this.applicationService.getByUserId();
+  @Get('getByUserId/:userId')
+  getByUserId(@Param('userId') userId: string) {
+    return this.applicationService.getByUserId(Number(userId));
   }
 
-  @Put('approve')
-  approve() {
-    return this.applicationService.approve();
+  @Put('approve/:id')
+  approve(@Param('id') applicationId: string) {
+    return this.applicationService.approve(applicationId);
   }
 
   @Put('status/:id')
