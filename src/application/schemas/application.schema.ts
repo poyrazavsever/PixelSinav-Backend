@@ -35,7 +35,7 @@ export class TeacherApplication {
   @Prop({ required: true })
   resume: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, type: [String] })
   certificates: string[];
 
   @Prop({ default: false })
