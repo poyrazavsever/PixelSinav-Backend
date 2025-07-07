@@ -46,9 +46,9 @@ export class ApplicationDto {
   @IsString()
   resume?: string;
 
-  @IsNotEmpty()
-  @IsString()
-  certificates?: string[];
+  @IsNotEmpty({ message: 'Sertifikalar Alanı Boş Olamaz' })
+  @IsString({ each: true, message: 'Sertifikalar String Olmalıdır' })
+  certificates: string[];
 
   @IsOptional()
   @IsBoolean({ message: 'Onay Durumu Geçersiz' })
