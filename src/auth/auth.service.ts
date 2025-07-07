@@ -14,7 +14,6 @@ import { LoginDto } from './dto/login.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { EmailService } from '../email/email.service';
-import { log } from 'console';
 
 @Injectable()
 export class AuthService {
@@ -121,8 +120,7 @@ export class AuthService {
       // Başarılı yanıt dön
       return {
         success: true,
-        message:
-          'Kayıt başarılı!',
+        message: 'Kayıt başarılı!',
         token,
         user: {
           _id: newUser._id.toString(),
@@ -306,7 +304,7 @@ export class AuthService {
   async findOneById(id: string) {
     try {
       const user = await this.userModel.findById(id);
-      
+
       if (!user) {
         throw new NotFoundException('Kullanıcı bulunamadı');
       }
@@ -328,8 +326,8 @@ export class AuthService {
           notifications: user.notifications,
           privacy: user.privacy,
           updatedAt: user.updatedAt,
-          createdAt: user.createdAt
-        }
+          createdAt: user.createdAt,
+        },
       };
     } catch (error) {
       console.error('Kullanıcı bulma hatası:', error);
@@ -354,7 +352,9 @@ export class AuthService {
     try {
       const user = await this.userModel.findOne({ email });
       if (!user) {
-        throw new NotFoundException('Bu e-posta adresiyle kayıtlı kullanıcı bulunamadı');
+        throw new NotFoundException(
+          'Bu e-posta adresiyle kayıtlı kullanıcı bulunamadı',
+        );
       }
 
       const { token } = await this.emailService.sendPasswordResetEmail(
@@ -364,23 +364,28 @@ export class AuthService {
 
       // Şifre sıfırlama token'ını kullanıcı belgesine kaydet
       const expirationDate = new Date(Date.now() + 60 * 60 * 1000); // 1 saat
-      
+
       console.log('Saving reset token:', {
         token,
         expirationDate,
-        userId: user._id
+        userId: user._id,
       });
 
       user.resetPasswordToken = token;
       user.resetPasswordExpires = expirationDate;
       await user.save();
-      
+
       // Doğrulama için tekrar kullanıcıyı oku
       const savedUser = await this.userModel.findById(user._id);
-      console.log('Saved user reset info:', savedUser ? {
-        token: savedUser.resetPasswordToken,
-        expires: savedUser.resetPasswordExpires
-      } : 'User not found after save');
+      console.log(
+        'Saved user reset info:',
+        savedUser
+          ? {
+              token: savedUser.resetPasswordToken,
+              expires: savedUser.resetPasswordExpires,
+            }
+          : 'User not found after save',
+      );
 
       return {
         success: true,
@@ -403,16 +408,19 @@ export class AuthService {
     try {
       console.log('Searching for token:', token);
       console.log('Current time:', new Date());
-      
+
       // Debug için tüm reset token'ı olan kullanıcıları kontrol et
       const allUsersWithToken = await this.userModel.find({
-        resetPasswordToken: { $exists: true }
+        resetPasswordToken: { $exists: true },
       });
-      console.log('Users with reset tokens:', allUsersWithToken.map(u => ({
-        email: u.email,
-        token: u.resetPasswordToken,
-        expires: u.resetPasswordExpires
-      })));
+      console.log(
+        'Users with reset tokens:',
+        allUsersWithToken.map((u) => ({
+          email: u.email,
+          token: u.resetPasswordToken,
+          expires: u.resetPasswordExpires,
+        })),
+      );
 
       const user = await this.userModel.findOne({
         resetPasswordToken: token,
@@ -426,14 +434,17 @@ export class AuthService {
       }
 
       // Eski şifreyi kontrol et
-      const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
+      const isOldPasswordValid = await bcrypt.compare(
+        oldPassword,
+        user.password,
+      );
       if (!isOldPasswordValid) {
         throw new UnauthorizedException('Eski şifreniz yanlış');
       }
 
       // Yeni şifreyi hashle
       const hashedPassword = await bcrypt.hash(newPassword, 10);
-      
+
       // Şifreyi güncelle ve token'ları temizle
       user.password = hashedPassword;
       user.resetPasswordToken = '';
