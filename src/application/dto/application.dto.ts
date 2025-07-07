@@ -9,6 +9,10 @@ import {
 } from 'class-validator';
 
 export class ApplicationDto {
+  @IsNotEmpty({ message: 'Kullanıcı ID Alanı Boş Olamaz' })
+  @IsString({ message: 'Kullanıcı ID Alanı Geçersiz' })
+  userId: string;
+
   @IsNotEmpty({ message: 'İsim Alanı Boş Olamaz' })
   @IsString({ message: 'İsim Alanı Geçersiz' })
   name: string;
