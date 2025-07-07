@@ -4,6 +4,8 @@ import {
   MaxLength,
   MinLength,
   IsString,
+  IsOptional,
+  IsBoolean,
 } from 'class-validator';
 
 export class ApplicationDto {
@@ -43,4 +45,12 @@ export class ApplicationDto {
   @IsNotEmpty()
   @IsString()
   certificates?: string[];
+
+  @IsOptional()
+  @IsBoolean({ message: 'Onay Durumu Geçersiz' })
+  isApproved?: boolean;
+
+  @IsOptional()
+  @IsString({ message: 'Durum Geçersiz' })
+  status?: string;
 }

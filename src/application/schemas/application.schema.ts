@@ -9,6 +9,12 @@ export class TeacherApplication {
   userId: Types.ObjectId;
 
   @Prop({ required: true })
+  createdAt: Date;
+
+  @Prop({ required: true })
+  updatedAt: Date;
+
+  @Prop({ required: true })
   name: string;
 
   @Prop({ required: true })
@@ -31,6 +37,12 @@ export class TeacherApplication {
 
   @Prop({ required: true })
   certificates: string[];
+
+  @Prop({ default: false })
+  isApproved: boolean;
+
+  @Prop({ default: 'Başvuru Süreciniz Devam Ediyor' })
+  status: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(TeacherApplication);
