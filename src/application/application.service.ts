@@ -39,52 +39,105 @@ export class ApplicationService {
     }
   }
 
-  async getAll() {
-    const applications = await this.teacherApplicationModel.find().exec();
-    return {
-      message: 'Tüm başvurular başarıyla getirildi',
-      applications,
-    };
+  async getAll(): Promise<{
+    message: string;
+    applications: TeacherApplication[];
+  }> {
+    try {
+      const applications = await this.teacherApplicationModel
+        .find()
+        .sort({ createdAt: -1 }) // En yeni başvurular önce gelsin
+        .exec();
+
+      return {
+        message: 'Tüm başvurular başarıyla getirildi',
+        applications,
+      };
+    } catch (error) {
+      console.log(error);
+      throw new Error('Başvurular getirilirken bir hata oluştu');
+    }
   }
 
-  async getByUserId(userId: number) {
-    const userApplications = await this.teacherApplicationModel
-      .find({ userId })
-      .exec();
-    return {
-      message: 'Kullanıcı başvuruları başarıyla getirildi',
-      applications: userApplications,
-    };
+  async getByUserId(
+    userId: string,
+  ): Promise<{ message: string; applications: TeacherApplication[] }> {
+    try {
+      const userApplications = await this.teacherApplicationModel
+        .find({ userId })
+        .sort({ createdAt: -1 })
+        .exec();
+
+      if (!userApplications.length) {
+        return {
+          message: 'Bu kullanıcıya ait başvuru bulunamadı',
+          applications: [],
+        };
+      }
+
+      return {
+        message: 'Kullanıcı başvuruları başarıyla getirildi',
+        applications: userApplications,
+      };
+    } catch (error) {
+      console.log(error);
+      throw new Error('Kullanıcı başvuruları getirilirken bir hata oluştu');
+    }
   }
 
-  async approve(applicationId: string) {
-    const application =
-      await this.teacherApplicationModel.findById(applicationId);
-    if (application) {
-      application.status = 'approved';
+  async approve(
+    applicationId: string,
+  ): Promise<{ message: string; application?: TeacherApplication }> {
+    try {
+      const application =
+        await this.teacherApplicationModel.findById(applicationId);
+
+      if (!application) {
+        return {
+          message: 'Onaylanacak başvuru bulunamadı',
+        };
+      }
+
+      application.status = 'Başvurunuz Onaylandı';
+      application.isApproved = true;
+      application.updatedAt = new Date();
+
       await application.save();
+
       return {
         message: 'Başvuru başarıyla onaylandı',
         application,
       };
+    } catch (error) {
+      console.log(error);
+      throw new Error('Başvuru onaylanırken bir hata oluştu');
     }
-    return {
-      message: 'Onaylanacak başvuru bulunamadı',
-    };
   }
 
-  async updateStatus(id: string, status: string) {
-    const application = await this.teacherApplicationModel.findById(id);
+  async updateStatus(
+    id: string,
+    status: string,
+  ): Promise<{ message: string; application: TeacherApplication }> {
+    try {
+      const application = await this.teacherApplicationModel.findById(id);
 
-    if (!application) {
-      throw new NotFoundException(`ID: ${id} olan başvuru bulunamadı`);
+      if (!application) {
+        throw new NotFoundException(`ID: ${id} olan başvuru bulunamadı`);
+      }
+
+      application.status = status;
+      application.updatedAt = new Date();
+      await application.save();
+
+      return {
+        message: 'Başvuru durumu başarıyla güncellendi',
+        application,
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new Error('Başvuru durumu güncellenirken bir hata oluştu');
     }
-
-    application.status = status;
-    await application.save();
-    return {
-      message: 'Başvuru durumu başarıyla güncellendi',
-      application,
-    };
   }
 }
