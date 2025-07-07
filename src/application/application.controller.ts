@@ -18,7 +18,7 @@ export class ApplicationController {
 
   @Get('getByUserId/:userId')
   getByUserId(@Param('userId') userId: string) {
-    return this.applicationService.getByUserId(Number(userId));
+    return this.applicationService.getByUserId(userId);
   }
 
   @Put('approve/:id')
