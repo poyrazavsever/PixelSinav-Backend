@@ -4,8 +4,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Connection, ConnectionStates } from 'mongoose';
+
+// Modules
 import { AuthModule } from './auth/auth.module';
 import { ApplicationModule } from './application/application.module';
+import { LessonModule } from './lessons/lesson.module';
 
 @Module({
   imports: [
@@ -34,6 +37,7 @@ import { ApplicationModule } from './application/application.module';
     }),
     AuthModule,
     ApplicationModule,
+    LessonModule,
   ],
   controllers: [AppController],
   providers: [AppService],
