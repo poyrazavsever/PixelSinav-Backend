@@ -11,6 +11,9 @@ export class LessonSection {
   @Prop({ required: true, minlength: 3, maxlength: 100 })
   title: string;
 
+  @Prop({ required: true, minlength: 10 })
+  content: string; // Markdown içerik
+
   @Prop({ required: true, minlength: 10, maxlength: 1000 })
   description: string;
 
