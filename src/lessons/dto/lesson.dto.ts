@@ -40,6 +40,11 @@ export class LessonSectionDto {
   @MaxLength(100, { message: 'Bölüm başlığı en fazla 100 karakter olmalıdır' })
   title: string;
 
+  @IsNotEmpty({ message: 'Bölüm içeriği boş olamaz' })
+  @IsString({ message: 'Bölüm içeriği string olmalıdır' })
+  @MinLength(10, { message: 'Bölüm içeriği en az 10 karakter olmalıdır' })
+  content: string;
+
   @IsNotEmpty({ message: 'Bölüm açıklaması boş olamaz' })
   @IsString({ message: 'Bölüm açıklaması string olmalıdır' })
   @MinLength(10, { message: 'Bölüm açıklaması en az 10 karakter olmalıdır' })
