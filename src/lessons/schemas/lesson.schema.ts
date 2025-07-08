@@ -26,6 +26,9 @@ export const LessonSectionSchema = SchemaFactory.createForClass(LessonSection);
 // Ana Ders Şeması
 @Schema({ timestamps: true })
 export class Lesson extends Document {
+  @Prop({ type: Types.ObjectId, required: true })
+  userId: Types.ObjectId;
+
   @Prop({ required: true, minlength: 3, maxlength: 100 })
   title: string;
 
