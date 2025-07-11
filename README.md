@@ -69,14 +69,265 @@ pnpm install
 pnpm run start:dev
 ```
 
-## API Endpoints
+## API Documentation
+<details>
+<summary><strong>📚 API Dokümantasyonunu Görüntüle</strong></summary>
 
-### Auth (Diğerleri geldikçe ekleyeceğim. Dökümente etme konusunda biraz acemiyim, destek olursanız çok mutlu olurum.)
+### Authentication Endpoints
+<details>
+<summary><strong>🔐 Authentication API Endpoints</strong></summary>
 
-- `POST /auth/register` - Yeni kullanıcı kaydı
-- `POST /auth/login` - Kullanıcı girişi
-- `PUT /auth/update` - Kullanıcı bilgilerini güncelleme
-- `POST /auth/verify-email` - E-posta doğrulama
+#### `POST /auth/register`
+Yeni bir kullanıcı kaydı oluşturur.
+```json
+// Request
+{
+  "email": "user@example.com",
+  "password": "secure_password",
+  "name": "User Name",
+  "roles": ["user"]  // Optional, default: ["user"]
+}
+
+// Response - 201 Created
+{
+  "message": "Kullanıcı başarıyla oluşturuldu",
+  "user": {
+    "id": "user_id",
+    "email": "user@example.com",
+    "name": "User Name",
+    "roles": ["user"]
+  }
+}
+```
+
+#### `POST /auth/login`
+Kullanıcı girişi yapar ve JWT token döner.
+```json
+// Request
+{
+  "email": "user@example.com",
+  "password": "secure_password"
+}
+
+// Response - 200 OK
+{
+  "message": "Giriş başarılı",
+  "access_token": "jwt_token",
+  "user": {
+    "id": "user_id",
+    "email": "user@example.com",
+    "roles": ["user"]
+  }
+}
+```
+
+#### `PUT /auth/update`
+Kullanıcı bilgilerini günceller. JWT token gereklidir.
+```json
+// Header
+Authorization: Bearer jwt_token
+
+// Request
+{
+  "name": "New Name",
+  "password": "new_password"  // Optional
+}
+
+// Response - 200 OK
+{
+  "message": "Kullanıcı bilgileri güncellendi",
+  "user": {
+    "id": "user_id",
+    "email": "user@example.com",
+    "name": "New Name"
+  }
+}
+```
+
+#### `POST /auth/verify-email`
+E-posta adresini doğrular.
+```json
+// Request
+{
+  "token": "verification_token"
+}
+
+// Response - 200 OK
+{
+  "message": "E-posta başarıyla doğrulandı"
+}
+```
+
+</details>
+
+### Lessons Endpoints
+<details>
+<summary><strong>📚 Lessons API Endpoints</strong></summary>
+
+#### `POST /lessons`
+Yeni bir ders oluşturur. Teacher rolü gereklidir.
+```json
+// Header
+Authorization: Bearer jwt_token
+
+// Request
+{
+  "title": "Ders Başlığı",
+  "category": "backend-development",
+  "difficultyLevel": "INTERMEDIATE",
+  "tags": ["nodejs", "typescript"],
+  "image": "image_url",
+  "description": "Ders açıklaması",
+  "sections": [
+    {
+      "title": "Bölüm 1",
+      "content": "Markdown içerik",
+      "description": "Bölüm açıklaması",
+      "order": 1,
+      "xpPoints": 1000
+    }
+  ]
+}
+
+// Response - 201 Created
+{
+  "message": "Ders başarıyla oluşturuldu",
+  "lesson": {
+    "id": "lesson_id",
+    "title": "Ders Başlığı",
+    // ... diğer alanlar
+  }
+}
+```
+
+#### `GET /lessons`
+Tüm dersleri listeler.
+```json
+// Response - 200 OK
+{
+  "message": "Dersler başarıyla getirildi",
+  "lessons": [
+    {
+      "id": "lesson_id",
+      "title": "Ders Başlığı",
+      // ... diğer alanlar
+    }
+  ]
+}
+```
+
+#### `GET /lessons/:id`
+Belirli bir dersin detaylarını getirir.
+```json
+// Response - 200 OK
+{
+  "message": "Ders başarıyla getirildi",
+  "lesson": {
+    "id": "lesson_id",
+    "title": "Ders Başlığı",
+    // ... tüm ders detayları
+  }
+}
+```
+
+#### `PUT /lessons/:id`
+Dersi günceller. Dersin sahibi olan öğretmen rolü gereklidir.
+```json
+// Header
+Authorization: Bearer jwt_token
+
+// Request
+{
+  "title": "Yeni Başlık",
+  // ... güncellenecek alanlar
+}
+
+// Response - 200 OK
+{
+  "message": "Ders başarıyla güncellendi",
+  "lesson": {
+    // ... güncellenmiş ders bilgileri
+  }
+}
+```
+
+#### `DELETE /lessons/:id`
+Dersi siler. Dersin sahibi olan öğretmen rolü gereklidir.
+```json
+// Header
+Authorization: Bearer jwt_token
+
+// Response - 200 OK
+{
+  "message": "Ders başarıyla silindi"
+}
+```
+
+#### `GET /lessons/teacher/:teacherId`
+Belirli bir öğretmenin derslerini listeler.
+```json
+// Response - 200 OK
+{
+  "message": "Öğretmenin dersleri başarıyla getirildi",
+  "lessons": [
+    // ... öğretmenin dersleri
+  ]
+}
+```
+
+</details>
+
+### Validasyon Kuralları
+<details>
+<summary><strong>✅ Validasyon Kuralları</strong></summary>
+
+#### Ders Oluşturma/Güncelleme
+- `title`: 3-100 karakter arası
+- `description`: 10-2000 karakter arası
+- `category`: Boş olamaz
+- `difficultyLevel`: BEGINNER, INTERMEDIATE, ADVANCED
+- `tags`: En az 1 etiket
+- `sections`: En az 1 bölüm
+  - `title`: 3-100 karakter
+  - `content`: En az 10 karakter (Markdown)
+  - `description`: 10-1000 karakter
+  - `order`: Minimum 1
+  - `xpPoints`: 0-5000 arası
+
+</details>
+
+### Hata Kodları
+<details>
+<summary><strong>❌ Hata Kodları</strong></summary>
+
+- `400 Bad Request`: Geçersiz istek formatı veya validasyon hatası
+- `401 Unauthorized`: Kimlik doğrulama hatası
+- `403 Forbidden`: Yetkilendirme hatası
+- `404 Not Found`: Kaynak bulunamadı
+- `500 Internal Server Error`: Sunucu hatası
+
+</details>
+
+### Authorization
+<details>
+<summary><strong>🔒 Authorization</strong></summary>
+
+Çoğu endpoint JWT tabanlı kimlik doğrulaması gerektirir. Token'ı header'da gönderin:
+```http
+Authorization: Bearer your_jwt_token
+```
+
+</details>
+
+### Rate Limiting
+<details>
+<summary><strong>⚡ Rate Limiting</strong></summary>
+
+API rate limiting uygulanmıştır:
+- Anonim istekler: 100 istek/saat
+- Kimliği doğrulanmış istekler: 1000 istek/saat
+
+</details>
 
 ## Katkıda Bulunma
 
