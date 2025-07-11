@@ -62,7 +62,7 @@ Topics I'm trying to learn in this project:
 
 ## Getting Started
 
-\`\`\`bash
+```bash
 # Clone the project
 git clone https://github.com/yourusername/pixelsinav-backend.git
 
@@ -71,7 +71,7 @@ pnpm install
 
 # Run in development mode
 pnpm run start:dev
-\`\`\`
+```
 
 ## API Documentation
 <details>
@@ -81,9 +81,9 @@ pnpm run start:dev
 <details>
 <summary><strong>🔐 Authentication API Endpoints</strong></summary>
 
-#### \`POST /auth/register\`
+#### `POST /auth/register`
 Creates a new user registration.
-\`\`\`json
+```json
 // Request
 {
   "email": "user@example.com",
@@ -102,11 +102,11 @@ Creates a new user registration.
     "roles": ["user"]
   }
 }
-\`\`\`
+```
 
-#### \`POST /auth/login\`
+#### `POST /auth/login`
 Authenticates user and returns JWT token.
-\`\`\`json
+```json
 // Request
 {
   "email": "user@example.com",
@@ -123,11 +123,11 @@ Authenticates user and returns JWT token.
     "roles": ["user"]
   }
 }
-\`\`\`
+```
 
-#### \`PUT /auth/update\`
+#### `PUT /auth/update`
 Updates user information. Requires JWT token.
-\`\`\`json
+```json
 // Header
 Authorization: Bearer jwt_token
 
@@ -146,11 +146,11 @@ Authorization: Bearer jwt_token
     "name": "New Name"
   }
 }
-\`\`\`
+```
 
-#### \`POST /auth/verify-email\`
+#### `POST /auth/verify-email`
 Verifies email address.
-\`\`\`json
+```json
 // Request
 {
   "token": "verification_token"
@@ -160,7 +160,7 @@ Verifies email address.
 {
   "message": "Email successfully verified"
 }
-\`\`\`
+```
 
 </details>
 
@@ -168,9 +168,9 @@ Verifies email address.
 <details>
 <summary><strong>📚 Lessons API Endpoints</strong></summary>
 
-#### \`POST /lessons\`
+#### `POST /lessons`
 Creates a new lesson. Requires teacher role.
-\`\`\`json
+```json
 // Header
 Authorization: Bearer jwt_token
 
@@ -202,11 +202,11 @@ Authorization: Bearer jwt_token
     // ... other fields
   }
 }
-\`\`\`
+```
 
-#### \`GET /lessons\`
+#### `GET /lessons`
 Lists all lessons.
-\`\`\`json
+```json
 // Response - 200 OK
 {
   "message": "Lessons successfully retrieved",
@@ -218,11 +218,11 @@ Lists all lessons.
     }
   ]
 }
-\`\`\`
+```
 
-#### \`GET /lessons/:id\`
+#### `GET /lessons/:id`
 Gets details of a specific lesson.
-\`\`\`json
+```json
 // Response - 200 OK
 {
   "message": "Lesson successfully retrieved",
@@ -232,7 +232,7 @@ Gets details of a specific lesson.
     // ... all lesson details
   }
 }
-\`\`\`
+```
 
 </details>
 
@@ -241,17 +241,17 @@ Gets details of a specific lesson.
 <summary><strong>✅ Validation Rules</strong></summary>
 
 #### Lesson Creation/Update
-- \`title\`: 3-100 characters
-- \`description\`: 10-2000 characters
-- \`category\`: Required
-- \`difficultyLevel\`: BEGINNER, INTERMEDIATE, ADVANCED
-- \`tags\`: At least 1 tag
-- \`sections\`: At least 1 section
-  - \`title\`: 3-100 characters
-  - \`content\`: Minimum 10 characters (Markdown)
-  - \`description\`: 10-1000 characters
-  - \`order\`: Minimum 1
-  - \`xpPoints\`: 0-5000 range
+- `title`: 3-100 characters
+- `description`: 10-2000 characters
+- `category`: Required
+- `difficultyLevel`: BEGINNER, INTERMEDIATE, ADVANCED
+- `tags`: At least 1 tag
+- `sections`: At least 1 section
+  - `title`: 3-100 characters
+  - `content`: Minimum 10 characters (Markdown)
+  - `description`: 10-1000 characters
+  - `order`: Minimum 1
+  - `xpPoints`: 0-5000 range
 
 </details>
 
@@ -259,11 +259,11 @@ Gets details of a specific lesson.
 <details>
 <summary><strong>❌ Error Codes</strong></summary>
 
-- \`400 Bad Request\`: Invalid request format or validation error
-- \`401 Unauthorized\`: Authentication error
-- \`403 Forbidden\`: Authorization error
-- \`404 Not Found\`: Resource not found
-- \`500 Internal Server Error\`: Server error
+- `400 Bad Request`: Invalid request format or validation error
+- `401 Unauthorized`: Authentication error
+- `403 Forbidden`: Authorization error
+- `404 Not Found`: Resource not found
+- `500 Internal Server Error`: Server error
 
 </details>
 
@@ -272,9 +272,9 @@ Gets details of a specific lesson.
 <summary><strong>🔒 Authorization</strong></summary>
 
 Most endpoints require JWT-based authentication. Send token in header:
-\`\`\`http
+```http
 Authorization: Bearer your_jwt_token
-\`\`\`
+```
 
 </details>
 
