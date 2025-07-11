@@ -20,7 +20,7 @@ export class LessonSection {
   @Prop({ required: true, min: 1 })
   order: number;
 
-  @Prop({ required: true, min: 0, max: 1000 })
+  @Prop({ required: true, min: 0, max: 5000 })
   xpPoints: number;
 }
 
