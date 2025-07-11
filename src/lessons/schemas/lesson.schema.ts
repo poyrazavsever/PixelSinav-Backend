@@ -5,7 +5,7 @@ import { DifficultyLevel, LessonStatus } from '../dto/lesson.dto';
 // Ders Bölümü Alt Şeması
 @Schema({ _id: false })
 export class LessonSection {
-  @Prop({ required: true, type: Types.ObjectId, auto: true })
+  @Prop({ type: Types.ObjectId, default: () => new Types.ObjectId() })
   sectionId: Types.ObjectId;
 
   @Prop({ required: true, minlength: 3, maxlength: 100 })
