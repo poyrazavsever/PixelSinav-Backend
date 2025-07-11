@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Lesson } from './schemas/lesson.schema';
@@ -21,6 +25,9 @@ export class LessonService {
   }
 
   async findOne(id: string): Promise<Lesson> {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Geçersiz ders ID');
+    }
     const lesson = await this.lessonModel.findById(id).exec();
     if (!lesson) {
       throw new NotFoundException('Ders bulunamadı');
