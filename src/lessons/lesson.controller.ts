@@ -18,11 +18,11 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RequestWithUser } from './interfaces/request-with-user.interface';
 
 @Controller('lessons')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class LessonController {
   constructor(private readonly lessonService: LessonService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('teacher')
   async create(
     @Request() req: RequestWithUser,
@@ -69,6 +69,7 @@ export class LessonController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('teacher')
   async update(
     @Request() req: RequestWithUser,
@@ -89,17 +90,35 @@ export class LessonController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('teacher')
   async remove(@Request() req: RequestWithUser, @Param('id') id: string) {
-    // Dersin sahibi olup olmadığını kontrol et
-    const lesson = await this.lessonService.findOne(id);
-    if (lesson.userId.toString() !== req.user._id.toString()) {
-      throw new UnauthorizedException('Bu dersi silme yetkiniz yok');
-    }
+    try {
+      // Dersin var olup olmadığını kontrol et
+      const lesson = await this.lessonService.findOne(id);
+      if (!lesson) {
+        throw new UnauthorizedException('Ders bulunamadı');
+      }
 
-    await this.lessonService.remove(id);
-    return {
-      message: 'Ders başarıyla silindi',
-    };
+      // Dersin userId alanının varlığını kontrol et
+      if (!lesson.userId) {
+        throw new UnauthorizedException('Ders sahibi bilgisi bulunamadı');
+      }
+
+      // Dersin sahibi olup olmadığını kontrol et
+      if (lesson.userId.toString() !== req.user._id.toString()) {
+        throw new UnauthorizedException('Bu dersi silme yetkiniz yok');
+      }
+
+      await this.lessonService.remove(id);
+      return {
+        message: 'Ders başarıyla silindi',
+      };
+    } catch (error: unknown) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new UnauthorizedException('Ders silinirken bir hata oluştu');
+    }
   }
 }
