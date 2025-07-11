@@ -1,11 +1,15 @@
 <div align="center">
   <img src="https://raw.githubusercontent.com/poyrazavsever/PixelSinav-Frontend/refs/heads/master/public/logo/logo.png" alt="Pixel Sınav Logo" width="200">
   <h1>Pixel Sınav</h1>
+  <p>
+    <a href="README.md">Türkçe</a> |
+    <a href="README-EN.md">English</a>
+  </p>
 </div>
 
 # Pixel Sınav Backend
 
-Merhaba! Ben bu projeyi öğrenme yolculuğumun bir parçası olarak geliştiriyorum. Modern web teknolojilerini derinlemesine öğrenmek ve gerçek dünya problemlerine çözümler üretmek için bu projeyi başlattım. Her yeni özellik, her yeni endpoint benim için yeni bir öğrenme fırsatı! 🚀
+Merhaba! Ben bu projeyi öğrenme yolculuğumun bir parçası olarak geliştiriyorum. Modern web teknolojilerini derinlemesine öğrenmek ve gerçek dünya problemlerine çözümler üretmek için bu projeyi başlattım.
 
 ## Proje Hakkında
 
