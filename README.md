@@ -98,6 +98,7 @@ Soru, öneri veya iş birliği için benimle iletişime geçebilirsiniz:
 - LinkedIn: [https://www.linkedin.com/in/poyrazavsever]
 - Email: poyrazavsever@gmail.com
 
+
 ## Lisans
 
 Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICENSE) dosyasına bakınız.
