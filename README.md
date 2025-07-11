@@ -69,13 +69,47 @@ pnpm install
 pnpm run start:dev
 ```
 
+
+
+## Katkıda Bulunma
+
+Bu bir öğrenme projesi olduğu için her türlü geri bildirime açığım! İyileştirmeler, öneriler veya yeni fikirler için lütfen issue açın veya pull request gönderin.
+
+## Öğrenme Kaynakları
+
+Projeyi geliştirirken faydalandığım kaynaklar:
+
+- [NestJS Resmi Dokümantasyon](https://docs.nestjs.com/)
+- [MongoDB University](https://university.mongodb.com/)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
+- [JWT.io](https://jwt.io/)
+
+## İletişim
+
+Soru, öneri veya iş birliği için benimle iletişime geçebilirsiniz:
+
+- LinkedIn: [https://www.linkedin.com/in/poyrazavsever]
+- Email: poyrazavsever@gmail.com
+
+
+## Lisans
+
+Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICENSE) dosyasına bakınız.
+
+---
+
+Bu projeyi beğendiyseniz yıldızlayın lütfen, böyle motive oluyorum da...
+Burası sürekli öğrenme ve gelişme yolculuğumda bir durak... Mentörlük yapmak, destek olmak, tavsiye vermek isterseniz [buradan](https://www.pavsever.com) bana ulaşabilirsiniz. Saygılar, sevgiler efendim.
+
+
+
 ## API Documentation
 <details>
-<summary><strong>📚 API Dokümantasyonunu Görüntüle</strong></summary>
+<summary><strong>API Dokümantasyonunu Görüntüle</strong></summary>
 
 ### Authentication Endpoints
 <details>
-<summary><strong>🔐 Authentication API Endpoints</strong></summary>
+<summary><strong>Authentication API Endpoints</strong></summary>
 
 #### `POST /auth/register`
 Yeni bir kullanıcı kaydı oluşturur.
@@ -162,7 +196,7 @@ E-posta adresini doğrular.
 
 ### Lessons Endpoints
 <details>
-<summary><strong>📚 Lessons API Endpoints</strong></summary>
+<summary><strong>Lessons API Endpoints</strong></summary>
 
 #### `POST /lessons`
 Yeni bir ders oluşturur. Teacher rolü gereklidir.
@@ -279,7 +313,7 @@ Belirli bir öğretmenin derslerini listeler.
 
 ### Validasyon Kuralları
 <details>
-<summary><strong>✅ Validasyon Kuralları</strong></summary>
+<summary><strong>Validasyon Kuralları</strong></summary>
 
 #### Ders Oluşturma/Güncelleme
 - `title`: 3-100 karakter arası
@@ -298,7 +332,7 @@ Belirli bir öğretmenin derslerini listeler.
 
 ### Hata Kodları
 <details>
-<summary><strong>❌ Hata Kodları</strong></summary>
+<summary><strong>Hata Kodları</strong></summary>
 
 - `400 Bad Request`: Geçersiz istek formatı veya validasyon hatası
 - `401 Unauthorized`: Kimlik doğrulama hatası
@@ -310,7 +344,7 @@ Belirli bir öğretmenin derslerini listeler.
 
 ### Authorization
 <details>
-<summary><strong>🔒 Authorization</strong></summary>
+<summary><strong>Authorization</strong></summary>
 
 Çoğu endpoint JWT tabanlı kimlik doğrulaması gerektirir. Token'ı header'da gönderin:
 ```http
@@ -321,40 +355,10 @@ Authorization: Bearer your_jwt_token
 
 ### Rate Limiting
 <details>
-<summary><strong>⚡ Rate Limiting</strong></summary>
+<summary><strong>Rate Limiting</strong></summary>
 
 API rate limiting uygulanmıştır:
 - Anonim istekler: 100 istek/saat
 - Kimliği doğrulanmış istekler: 1000 istek/saat
 
 </details>
-
-## Katkıda Bulunma
-
-Bu bir öğrenme projesi olduğu için her türlü geri bildirime açığım! İyileştirmeler, öneriler veya yeni fikirler için lütfen issue açın veya pull request gönderin.
-
-## Öğrenme Kaynakları
-
-Projeyi geliştirirken faydalandığım kaynaklar:
-
-- [NestJS Resmi Dokümantasyon](https://docs.nestjs.com/)
-- [MongoDB University](https://university.mongodb.com/)
-- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
-- [JWT.io](https://jwt.io/)
-
-## İletişim
-
-Soru, öneri veya iş birliği için benimle iletişime geçebilirsiniz:
-
-- LinkedIn: [https://www.linkedin.com/in/poyrazavsever]
-- Email: poyrazavsever@gmail.com
-
-
-## Lisans
-
-Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICENSE) dosyasına bakınız.
-
----
-
-  ⭐ Bu projeyi beğendiyseniz yıldız vermeyi unutmayın!
-  🌱 Burası sürekli öğrenme ve gelişme yolculuğunda bir durak... Mentörlük yapmak, destek olmak, tavsiye vermek isterseniz [buradan](https://www.pavsever.com) bana ulaşın.
