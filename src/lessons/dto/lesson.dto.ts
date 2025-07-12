@@ -67,9 +67,6 @@ export class LessonSectionDto {
 
 // Ana ders DTO'su
 export class LessonDto {
-  @IsNotEmpty({ message: 'Kullanıcı ID boş olamaz' })
-  @IsString({ message: 'Kullanıcı ID string olmalıdır' })
-  userId: string;
 
   @IsNotEmpty({ message: 'Ders adı boş olamaz' })
   @IsString({ message: 'Ders adı string olmalıdır' })

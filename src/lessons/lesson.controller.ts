@@ -78,7 +78,7 @@ export class LessonController {
   ) {
     // Dersin sahibi olup olmadığını kontrol et
     const lesson = await this.lessonService.findOne(id);
-    if (lesson.userId.toString() !== req.user._id.toString()) {
+    if (lesson.teacherId.toString() !== req.user._id.toString()) {
       throw new UnauthorizedException('Bu dersi düzenleme yetkiniz yok');
     }
 
@@ -100,13 +100,13 @@ export class LessonController {
         throw new UnauthorizedException('Ders bulunamadı');
       }
 
-      // Dersin userId alanının varlığını kontrol et
-      if (!lesson.userId) {
+      // Dersin teacherId alanının varlığını kontrol et
+      if (!lesson.teacherId) {
         throw new UnauthorizedException('Ders sahibi bilgisi bulunamadı');
       }
 
       // Dersin sahibi olup olmadığını kontrol et
-      if (lesson.userId.toString() !== req.user._id.toString()) {
+      if (lesson.teacherId.toString() !== req.user._id.toString()) {
         throw new UnauthorizedException('Bu dersi silme yetkiniz yok');
       }
 
